@@ -12,9 +12,9 @@ import * as jpeg from 'jpeg-js'
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-react-native';
 
-// import * as mobilenet from '@tensorflow-models/mobilenet'
+import * as mobilenet from '@tensorflow-models/mobilenet'
 // You can try with other models, see https://github.com/tensorflow/tfjs-models
-import * as cocossd from '@tensorflow-models/coco-ssd'
+//import * as cocossd from '@tensorflow-models/coco-ssd'
 
 export default class CocoSsdScreen extends React.Component {
   constructor(props) {
@@ -31,8 +31,8 @@ export default class CocoSsdScreen extends React.Component {
     await tf.ready(); // preparing TensorFlow
     this.setState({ isTfReady: true,});
 
-    // this.model = await mobilenet.load(); // preparing MobileNet model
-    this.model = await cocossd.load(); // preparing COCO-SSD model
+    this.model = await mobilenet.load(); // preparing MobileNet model
+    //this.model = await cocossd.load(); // preparing COCO-SSD model
     this.setState({ isModelReady: true });
 
     this.getPermissionAsync(); // get permission for accessing camera on mobile device
@@ -76,7 +76,7 @@ export default class CocoSsdScreen extends React.Component {
       const raw = new Uint8Array(imgBuffer)
       const imageTensor = this.imageToTensor(raw);
       console.log('imageTensor: ', imageTensor);
-      const predictions = await this.model.detect(imageTensor)
+      const predictions = await this.model.classify(imageTensor)
 
       this.setState({ predictions: predictions })
 
@@ -118,16 +118,12 @@ export default class CocoSsdScreen extends React.Component {
   }]
   */
   renderPrediction = (prediction, index) => {
-    const pclass = prediction.class;
-    const score  = prediction.score;
-    const x = prediction.bbox[0];
-    const y = prediction.bbox[1];
-    const w = prediction.bbox[2];
-    const h = prediction.bbox[3];
-
+    const pclass = prediction.className;
+    const score  = prediction.probability;
+ 
     return (
         <Text  key={index} style={styles.text}>
-          Prediction: {pclass} {', '} Probability: {score} {', '} Bbox: {x} {', '} {y} {', '} {w} {', '} {h}
+          Prediction: {pclass} {', '} Probability: {score} {', '} 
         </Text>
     )
   }
@@ -152,13 +148,13 @@ export default class CocoSsdScreen extends React.Component {
         <StatusBar barStyle='light-content' />
         <View style={styles.loadingContainer}>
           <Text style={styles.text}>
-            TensorFlow.js ready? {isTfReady ? <Text>✌</Text> : ''}
+            TensorFlow.js ready? {isTfReady ? <Text>❤</Text> : ''}
           </Text>
 
           <View style={styles.loadingModelContainer}>
-            <Text style={styles.text}>COCO-SSD model ready? </Text>
+            <Text style={styles.text}>MobilNet model ready? </Text>
             {isModelReady ? (
-              <Text style={styles.text}>✌</Text>
+              <Text style={styles.text}>❤</Text>
             ) : (
               <ActivityIndicator size='small' />
             )}
